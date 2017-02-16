@@ -1,0 +1,32 @@
+﻿<Window x:Name="myWindow"
+        x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CreoSaveToFileShuffler"
+        mc:Ignorable="d"
+        Title="Save in FileShuffler format"
+        Height="180"
+        Width="350"
+        ResizeMode="NoResize"
+        Icon="pings/saveas.png">
+    <Grid x:Name="myGrid">
+        <Label x:Name="label"
+               Content="File will be saved as:"
+               Height="33"
+               VerticalAlignment="Top"
+               FontSize="18"
+               HorizontalContentAlignment="Center"
+               Margin="10,22,10.333,0" />
+        <Label x:Name="label_Copy"
+               Content="----"
+               Height="33"
+               VerticalAlignment="Top"
+               FontSize="20"
+               HorizontalContentAlignment="Center"
+               Margin="10,60,10.333,0"
+               FontWeight="Bold" />
+
+    </Grid>
+</Window>
