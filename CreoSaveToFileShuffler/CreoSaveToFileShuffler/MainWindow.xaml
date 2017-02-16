@@ -18,15 +18,17 @@
                VerticalAlignment="Top"
                FontSize="18"
                HorizontalContentAlignment="Center"
-               Margin="10,22,10.333,0" />
-        <Label x:Name="label_Copy"
-               Content="----"
-               Height="33"
-               VerticalAlignment="Top"
-               FontSize="20"
-               HorizontalContentAlignment="Center"
-               Margin="10,60,10.333,0"
-               FontWeight="Bold" />
+               Margin="10,22,10.333,0"
+               HorizontalAlignment="Center" />
+        <TextBlock x:Name="myInfo"
+                   Height="30"
+                   TextWrapping="Wrap"
+                   Text="*****"
+                   VerticalAlignment="Top"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   TextAlignment="Center"
+                   Margin="10,60,21,0" />
 
     </Grid>
 </Window>
