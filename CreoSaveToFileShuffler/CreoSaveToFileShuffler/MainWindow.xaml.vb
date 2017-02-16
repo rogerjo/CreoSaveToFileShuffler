@@ -5,8 +5,6 @@ Class MainWindow
     Dim asyncConnection As IpfcAsyncConnection = Nothing
     Dim model As IpfcModel
     Dim activeserver As IpfcServer
-    Dim paramown As IpfcParameterOwner
-    Dim ipbaseparam As IpfcBaseParameter
     Dim paramval As IpfcParamValue
     Dim session As IpfcBaseSession
     Dim Moditem As CMpfcModelItem
@@ -82,6 +80,30 @@ Class MainWindow
     End Sub
 
     Private Sub ExportFileToDisc(FileNameComplete As String, ConvertType As Boolean)
+        Dim Workdir As String = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory).ToString()
+        Dim DesExStep As IpfcSTEP3DExportInstructions
+        Dim cDesExStep As CCpfcSTEP3DExportInstructions
+        Dim Des3DEx As IpfcExport3DInstructions
+        Dim DesEx As IpfcExportInstructions
+        Dim DesFlags As IpfcGeometryFlags
+        Dim Destination As String = Workdir & "\" & FileNameComplete
+
         myInfo.Text = FileNameComplete.ToString()
+
+        'Export file to STEP
+        If ConvertType Then
+            cDesExStep = New CCpfcSTEP3DExportInstructions
+            DesFlags = (New CCpfcGeometryFlags).Create()
+            DesFlags.AsSolids = True
+            DesExStep = cDesExStep.Create(EpfcAssemblyConfiguration.EpfcEXPORT_ASM_MULTI_FILES, DesFlags)
+            Des3DEx = DesExStep
+            DesEx = Des3DEx
+
+            session.CurrentModel.Export(Destination, Des3DEx)
+
+
+        Else
+
+        End If
     End Sub
 End Class
