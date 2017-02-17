@@ -12,8 +12,8 @@
         ResizeMode="NoResize"
         Icon="pings/saveas.png">
     <Grid x:Name="myGrid">
-        <Label x:Name="label"
-               Content="File will be saved as:"
+        <Label x:Name="myLabel"
+               Content="File was saved as:"
                Height="33"
                VerticalAlignment="Top"
                FontSize="18"
@@ -29,6 +29,13 @@
                    FontWeight="Bold"
                    TextAlignment="Center"
                    Margin="10,60,21,0" />
+        <Button x:Name="myButton"
+                Content="Got it!"
+                HorizontalAlignment="Center"
+                Height="22"
+                VerticalAlignment="Bottom"
+                Width="86"
+                Margin="0,0,0,15" />
 
     </Grid>
 </Window>

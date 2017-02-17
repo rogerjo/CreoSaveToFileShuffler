@@ -15,8 +15,8 @@ Class MainWindow
     Dim FileNameComplete As String
 
 
-    Private Sub myWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles myWindow.Loaded
-        myInfo.Text = "*****"
+    Private Sub MyWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles myWindow.Loaded
+        myInfo.Text = "Working..."
         Call SaveObjectToDisk()
     End Sub
 
@@ -55,13 +55,13 @@ Class MainWindow
             Select Case model.Type
                 Case 0
                     FileEnd = ".stp"
-                    ConvertType = True
+
                 Case 1
                     FileEnd = ".stp"
-                    ConvertType = True
+
                 Case 2
                     FileEnd = ".pdf"
-                    ConvertType = False
+
                 Case Else
                     MsgBox("Model not supported. Only Drawings, Models or Assemblies", "Script Message")
                     asyncConnection.Disconnect(1)
@@ -70,40 +70,66 @@ Class MainWindow
 
             FileNameComplete = model.FullName + "_" + model.Revision + "_" + model.Version + "_" + State + FileEnd
 
-            Call ExportFileToDisc(FileNameComplete, ConvertType)
+            Call ExportFileToDisc(FileNameComplete, model.Type)
 
-            asyncConnection.Disconnect(1)
 
         Catch ex As Exception
-
+            myInfo.Text = "No session"
         End Try
     End Sub
 
-    Private Sub ExportFileToDisc(FileNameComplete As String, ConvertType As Boolean)
-        Dim Workdir As String = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory).ToString()
-        Dim DesExStep As IpfcSTEP3DExportInstructions
-        Dim cDesExStep As CCpfcSTEP3DExportInstructions
-        Dim Des3DEx As IpfcExport3DInstructions
-        Dim DesEx As IpfcExportInstructions
-        Dim DesFlags As IpfcGeometryFlags
-        Dim Destination As String = Workdir & "\" & FileNameComplete
+    Sub TestForDir(workdir As String)
+        If Dir(workdir, vbDirectory) = "" Then
+            MkDir(workdir)
+        End If
+    End Sub
 
+    Private Sub ExportFileToDisc(FileNameComplete As String, ConvertType As Integer)
+        Dim Workdir As String = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory).ToString() & "\Fileshuffler Files\"
+        Dim Destination As String = Workdir & FileNameComplete
+
+        TestForDir(Workdir)
         myInfo.Text = FileNameComplete.ToString()
 
-        'Export file to STEP
-        If ConvertType Then
+
+        If (ConvertType = 0 Or ConvertType = 1) Then 'Export assy and model to STEP
+            Dim cDesExStep As CCpfcSTEP3DExportInstructions
+            Dim DesFlags As IpfcGeometryFlags
+            Dim Des3DEx As IpfcExport3DInstructions
+            Dim DesEx As IpfcExportInstructions
+            Dim DesExStep As IpfcSTEP3DExportInstructions
+
             cDesExStep = New CCpfcSTEP3DExportInstructions
             DesFlags = (New CCpfcGeometryFlags).Create()
             DesFlags.AsSolids = True
-            DesExStep = cDesExStep.Create(EpfcAssemblyConfiguration.EpfcEXPORT_ASM_MULTI_FILES, DesFlags)
+            DesExStep = cDesExStep.Create(EpfcAssemblyConfiguration.EpfcEXPORT_ASM_FLAT_FILE, DesFlags)
             Des3DEx = DesExStep
             DesEx = Des3DEx
 
             session.CurrentModel.Export(Destination, Des3DEx)
 
 
-        Else
+        ElseIf (ConvertType = 2) Then 'Export drawing to PDF
+            Dim expdf As IpfcPDFExportInstructions
+            Dim pdfopt As IpfcPDFOption
+            Dim EpfcPDFOPT_LAUNCH_VIEWER As Boolean
+            Dim Drawing As IpfcModel2D
+
+            Drawing = CType(session.CurrentModel, IpfcModel2D)
+            Drawing.Regenerate()
+
+            EpfcPDFOPT_LAUNCH_VIEWER = True
+            expdf = (New CCpfcPDFExportInstructions).Create()
+            pdfopt = (New CCpfcPDFOption).Create()
+            pdfopt.OptionValue = (New CMpfcArgument).CreateBoolArgValue(EpfcPDFOPT_LAUNCH_VIEWER)
+
+            session.CurrentModel.Export(Destination, CType(expdf, IpfcExportInstructions))
 
         End If
+    End Sub
+
+    Private Sub myButton_Click(sender As Object, e As RoutedEventArgs) Handles myButton.Click
+        asyncConnection.Disconnect(1)
+        Me.Close()
     End Sub
 End Class
