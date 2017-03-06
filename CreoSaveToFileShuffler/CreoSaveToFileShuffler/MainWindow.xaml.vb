@@ -114,9 +114,11 @@ Class MainWindow
             Dim pdfopt As IpfcPDFOption
             Dim EpfcPDFOPT_LAUNCH_VIEWER As Boolean
             Dim Drawing As IpfcModel2D
+            Dim sheet As IpfcSheetOwner
 
             Drawing = CType(session.CurrentModel, IpfcModel2D)
             Drawing.Regenerate()
+
 
             EpfcPDFOPT_LAUNCH_VIEWER = True
             expdf = (New CCpfcPDFExportInstructions).Create()
@@ -128,7 +130,7 @@ Class MainWindow
         End If
     End Sub
 
-    Private Sub myButton_Click(sender As Object, e As RoutedEventArgs) Handles myButton.Click
+    Private Sub MyButton_Click(sender As Object, e As RoutedEventArgs) Handles myButton.Click
         asyncConnection.Disconnect(1)
         Me.Close()
     End Sub
