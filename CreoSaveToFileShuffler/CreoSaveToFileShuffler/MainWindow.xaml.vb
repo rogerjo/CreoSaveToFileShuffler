@@ -11,7 +11,6 @@ Class MainWindow
     Dim State As String = ""
     Dim FileEnd As String = ""
     Dim ConvertType As Boolean
-
     Dim FileNameComplete As String
 
     Sub Creo_Connect()
@@ -38,21 +37,13 @@ Class MainWindow
     End Sub
     Private Sub MyWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles myWindow.Loaded
         myInfo.Text = "Working..."
+
         Call Creo_Connect()
 
-        Call SaveObjectToDisk()
+        Call DecideFileType()
     End Sub
 
-    Private Sub SaveObjectToDisk()
-
-        'Try
-        '    asyncConnection = (New CCpfcAsyncConnection).Connect(Nothing, Nothing, Nothing, Nothing)
-        'session = asyncConnection.Session
-        'activeserver = session.GetActiveServer
-        'model = session.CurrentModel
-        'Catch ex As Exception
-        '    myInfo.Text = "No session"
-        'End Try
+    Private Sub DecideFileType()
 
         Try
             If model Is Nothing Then
@@ -122,9 +113,24 @@ Class MainWindow
 
         myInfo.Text = FileNameComplete.ToString()
 
-
         Try
-            If (ConvertType = 0 Or ConvertType = 1) Then 'Export assy and model to STEP
+            If (ConvertType = 0) Then 'Export assy to STEP
+                Dim cDesExStep As CCpfcSTEP3DExportInstructions
+                Dim DesFlags As IpfcGeometryFlags
+                Dim Des3DEx As IpfcExport3DInstructions
+                Dim DesEx As IpfcExportInstructions
+                Dim DesExStep As IpfcSTEP3DExportInstructions
+
+                cDesExStep = New CCpfcSTEP3DExportInstructions
+                DesFlags = (New CCpfcGeometryFlags).Create()
+                DesFlags.AsSolids = True
+                DesExStep = cDesExStep.Create(EpfcAssemblyConfiguration.EpfcEXPORT_ASM_SINGLE_FILE, DesFlags)
+                Des3DEx = DesExStep
+                DesEx = Des3DEx
+
+                session.CurrentModel.Export(Destination, Des3DEx)
+
+            ElseIf (ConvertType = 1) Then 'Export model to STEP
                 Dim cDesExStep As CCpfcSTEP3DExportInstructions
                 Dim DesFlags As IpfcGeometryFlags
                 Dim Des3DEx As IpfcExport3DInstructions
@@ -139,18 +145,24 @@ Class MainWindow
                 DesEx = Des3DEx
 
                 session.CurrentModel.Export(Destination, Des3DEx)
-
-
             ElseIf (ConvertType = 2) Then 'Export drawing to PDF
                 Dim expdf As IpfcPDFExportInstructions
                 Dim pdfopt As IpfcPDFOption
                 Dim EpfcPDFOPT_LAUNCH_VIEWER As Boolean
                 Dim Drawing As IpfcModel2D
-                Dim sheet As IpfcSheetOwner
+                Dim Sheet As IpfcSheetOwner
+                Dim numSheets As Integer
 
                 Drawing = CType(session.CurrentModel, IpfcModel2D)
-                Drawing.Regenerate()
+                Sheet = CType(session.CurrentModel, IpfcSheetOwner)
+                numSheets = Sheet.NumberOfSheets
 
+                'Loop through every sheet and regenerate before creating PDF
+                For index = 1 To numSheets
+                    Sheet.CurrentSheetNumber = index
+                    Sheet.RegenerateSheet(index)
+
+                Next
 
                 EpfcPDFOPT_LAUNCH_VIEWER = True
                 expdf = (New CCpfcPDFExportInstructions).Create()
@@ -171,6 +183,15 @@ Class MainWindow
         Catch ex As Exception
 
         End Try
-        Me.Close()
+        Close()
+    End Sub
+
+    Private Sub myWindow_Closing(sender As Object, e As ComponentModel.CancelEventArgs) Handles myWindow.Closing
+        Try
+            asyncConnection.Disconnect(1)
+        Catch ex As Exception
+
+        End Try
+
     End Sub
 End Class
