@@ -11,7 +11,8 @@
         Width="350"
         ResizeMode="NoResize"
         Icon="pings/saveas.png">
-    <Grid x:Name="myGrid">
+    <Grid x:Name="myGrid"
+          Background="#FFDFDFDF">
         <Label x:Name="myLabel"
                Content="File was saved as:"
                Height="33"
@@ -19,7 +20,8 @@
                FontSize="18"
                HorizontalContentAlignment="Center"
                Margin="10,22,10.333,0"
-               HorizontalAlignment="Center" />
+               HorizontalAlignment="Center"
+               Foreground="#FF3F5587" />
         <TextBlock x:Name="myInfo"
                    Height="30"
                    TextWrapping="Wrap"
@@ -28,14 +30,17 @@
                    FontSize="18"
                    FontWeight="Bold"
                    TextAlignment="Center"
-                   Margin="10,60,21,0" />
+                   Margin="10,60,21,0"
+                   Foreground="#FF3F5587" />
         <Button x:Name="myButton"
                 Content="Got it!"
                 HorizontalAlignment="Center"
                 Height="22"
                 VerticalAlignment="Bottom"
                 Width="86"
-                Margin="0,0,0,15" />
+                Margin="0,0,0,15"
+                Foreground="#FF3F5587"
+                Background="#FFF1F1F1" />
 
     </Grid>
 </Window>
