@@ -63,7 +63,7 @@ Class MainWindow
                     State = "C"
                 Case "Design"
                     State = "D"
-                Case "Pre-Released"
+                Case "PreReleased"
                     State = "P"
                 Case "Released"
                     State = "R"
