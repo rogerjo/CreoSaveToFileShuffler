@@ -146,30 +146,43 @@ Class MainWindow
 
                 session.CurrentModel.Export(Destination, Des3DEx)
             ElseIf (ConvertType = 2) Then 'Export drawing to PDF
-                Dim expdf As IpfcPDFExportInstructions
-                Dim pdfopt As IpfcPDFOption
-                Dim EpfcPDFOPT_LAUNCH_VIEWER As Boolean
-                Dim Drawing As IpfcModel2D
-                Dim Sheet As IpfcSheetOwner
-                Dim numSheets As Integer
 
-                Drawing = CType(session.CurrentModel, IpfcModel2D)
-                Sheet = CType(session.CurrentModel, IpfcSheetOwner)
-                numSheets = Sheet.NumberOfSheets
+                Dim PDFExportInstrCreate As New CCpfcPDFExportInstructions
+                Dim PDFExportInstr As IpfcPDFExportInstructions
+                PDFExportInstr = PDFExportInstrCreate.Create
+                Dim PDF_Options As New CpfcPDFOptions
 
-                'Loop through every sheet and regenerate before creating PDF
-                For index = 1 To numSheets
-                    Sheet.CurrentSheetNumber = index
-                    Sheet.RegenerateSheet(index)
+                ' Set Stroke All Fonts PDF Option
+                Dim PDFOptionCreate_SAF As New CCpfcPDFOption
+                Dim PDFOption_SAF As IpfcPDFOption
+                PDFOption_SAF = PDFOptionCreate_SAF.Create
+                PDFOption_SAF.OptionType = EpfcPDFOptionType.EpfcPDFOPT_FONT_STROKE
+                Dim newArg_SAF As New CMpfcArgument
+                PDFOption_SAF.OptionValue = newArg_SAF.CreateIntArgValue(EpfcPDFFontStrokeMode.EpfcPDF_USE_TRUE_TYPE_FONTS)
+                Call PDF_Options.Append(PDFOption_SAF)
 
-                Next
+                ' Set COLOR_DEPTH value (Set EpfcPDF_CD_MONO to have Black & White output)
+                Dim PDFOptionCreate_CD As New CCpfcPDFOption
+                Dim PDFOption_CD As IpfcPDFOption
+                PDFOption_CD = PDFOptionCreate_CD.Create
+                PDFOption_CD.OptionType = EpfcPDFOptionType.EpfcPDFOPT_COLOR_DEPTH
+                Dim newArg_CD As New CMpfcArgument
+                PDFOption_CD.OptionValue = newArg_CD.CreateIntArgValue(EpfcPDFColorDepth.EpfcPDF_CD_MONO)
+                Call PDF_Options.Append(PDFOption_CD)
 
-                EpfcPDFOPT_LAUNCH_VIEWER = True
-                expdf = (New CCpfcPDFExportInstructions).Create()
-                pdfopt = (New CCpfcPDFOption).Create()
-                pdfopt.OptionValue = (New CMpfcArgument).CreateBoolArgValue(EpfcPDFOPT_LAUNCH_VIEWER)
+                ' Set PDF EpfcPDFOPT_LAUNCH_VIEWER(Set TRUE to Launch Adobe reader)
+                Dim PDFOptionCreate_LV As New CCpfcPDFOption
+                Dim PDFOption_LV As IpfcPDFOption
+                PDFOption_LV = PDFOptionCreate_LV.Create
+                PDFOption_LV.OptionType = EpfcPDFOptionType.EpfcPDFOPT_LAUNCH_VIEWER
+                Dim newArg_LV As New CMpfcArgument
+                PDFOption_LV.OptionValue = newArg_LV.CreateBoolArgValue(True)
+                Call PDF_Options.Append(PDFOption_LV)
 
-                session.CurrentModel.Export(Destination, CType(expdf, IpfcExportInstructions))
+                PDFExportInstr.Options = PDF_Options
+
+                session.CurrentModel.Export(Destination, PDFExportInstr)
+
 
             End If
         Catch ex As Exception
