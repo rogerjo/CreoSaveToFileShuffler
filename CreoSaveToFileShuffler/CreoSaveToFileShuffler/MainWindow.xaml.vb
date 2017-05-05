@@ -61,11 +61,9 @@ Class MainWindow
             Select Case model.ReleaseLevel
                 Case "Concept"
                     State = "C"
-                Case "Design"
-                Case "Redesign"
+                Case "Design", "Redesign"
                     State = "D"
-                Case "PreReleased"
-                Case "PreReleased RD"
+                Case "PreReleased", "PreReleased RD"
                     State = "P"
                 Case "Released"
                     State = "R"
