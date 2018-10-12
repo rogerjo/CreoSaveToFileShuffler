@@ -121,6 +121,7 @@ Class MainWindow
                 Dim DesEx As IpfcExportInstructions
                 Dim DesExStep As IpfcSTEP3DExportInstructions
 
+
                 cDesExStep = New CCpfcSTEP3DExportInstructions
                 DesFlags = (New CCpfcGeometryFlags).Create()
                 DesFlags.AsSolids = True
@@ -145,7 +146,13 @@ Class MainWindow
                 DesEx = Des3DEx
 
                 session.CurrentModel.Export(Destination, Des3DEx)
+
             ElseIf (ConvertType = 2) Then 'Export drawing to PDF
+                Dim drawing As IpfcDrawing
+                Dim sheets As Integer
+                Dim i As Integer
+                Dim sheetData As IpfcSheetData
+                'Dim model As IpfcModel
 
                 Dim PDFExportInstrCreate As New CCpfcPDFExportInstructions
                 Dim PDFExportInstr As IpfcPDFExportInstructions
@@ -180,6 +187,15 @@ Class MainWindow
                 Call PDF_Options.Append(PDFOption_LV)
 
                 PDFExportInstr.Options = PDF_Options
+
+                model = session.CurrentModel
+                drawing = CType(model, IpfcDrawing)
+                sheets = drawing.NumberOfSheets
+                For i = 1 To sheets
+                    drawing.CurrentSheetNumber = i
+                    drawing.Regenerate()
+                Next
+
 
                 session.CurrentModel.Export(Destination, PDFExportInstr)
 
